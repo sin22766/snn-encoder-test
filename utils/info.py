@@ -195,7 +195,8 @@ def parse_all_summary_files(dataset_path: str) -> List[PatientSummary]:
     summary_info: List[PatientSummary] = []
     
     # Find all patient directories
-    patient_dirs = [d for d in os.listdir(dataset_path) if d.startswith("chb")].sort()
+    patient_dirs = [d for d in os.listdir(dataset_path) if d.startswith("chb")]
+    patient_dirs.sort()
     
     for patient_dir in patient_dirs:
         patient_path = os.path.join(dataset_path, patient_dir)
