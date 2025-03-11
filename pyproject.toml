@@ -1,0 +1,16 @@
+[project]
+name = "snn_encoder_benchmark"
+version = "0.1.0"
+description = "Benchmarking of SNN encoders for EEG data for seizure detection"
+authors = [{ name = "Promchai Chooseang", email = "promchai2sin@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "torch>=2.6.0",
+    "mne>=1.9.0",
+    "h5py>=3.13.0",
+    "ipympl>=0.9.7",
+    "numpy>=2.2.3",
+    "pandas>=2.2.3",
+    "snntorch>=0.9.4"
+]
