@@ -215,7 +215,7 @@ def parse_all_summary_files(dataset_path: str) -> List[PatientSummary]:
 
     # Getting the start time and end time of the chb24 patient
     for file in summary_info[23]["files"]:
-        raw = mne.io.read_raw_edf(os.path.join(dataset_path, "chb24", file["name"]), preload=True)
+        raw = mne.io.read_raw_edf(os.path.join(dataset_path, "chb24", file["name"]), preload=True, verbose=40)
 
         start_time = raw.info["meas_date"]
         end_time = start_time + timedelta(seconds=raw.n_times / raw.info["sfreq"])
