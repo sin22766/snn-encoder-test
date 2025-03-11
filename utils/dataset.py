@@ -100,26 +100,32 @@ def list_interictal(summary_info: List[PatientSummary], ictal_list: List[IctalIn
     interictal_files: List[InterictalInfo] = []
 
     for patient in summary_info:
-        file_duration = patient["file_duration"]
         patient_ictal = [ictal["file"] for ictal in ictal_list if ictal["file"].startswith(patient["patient_id"])]
         patient_file = [file["name"] for file in patient["files"]]
-
-        file_gap = math.ceil(hour_gap / file_duration)
         
         for i, file in enumerate(patient_file):
             in_range = False
+            file_duration = patient["files"][i]["end_time"] - patient["files"][i]["start_time"]
 
             for ictal in patient_ictal:
-                diff = abs(patient_file.index(ictal) - i)
-                if diff <= file_gap:
+                ictal_idx = patient_file.index(ictal)
+
+                if i - ictal_idx == 0:
+                    in_range = True
+                    break
+                elif i - ictal_idx > 0:
+                    diff = patient["files"][i]["start_time"] - patient["files"][ictal_idx]["end_time"]
+                else:
+                    diff = patient["files"][ictal_idx]["start_time"] - patient["files"][i]["end_time"]
+                if diff.seconds <= hour_gap * 3600:
                     in_range = True
                     break
 
             if not in_range:
                 interictal_files.append({
                     "file": file,
-                    "total_time": file_duration * 3600,
-                    "total_windows": (file_duration * 3600 - window_size) // sliding_step + 1
+                    "total_time": file_duration.seconds,
+                    "total_windows": (file_duration.seconds - window_size) // sliding_step + 1
                 })
                             
     return interictal_files

@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 import os
 import re
 from typing import List
+
+import mne
 from utils.constant import COMMON_CHANNELS
 from utils.typing import FileInfo, PatientSummary
 
@@ -82,7 +84,6 @@ class SummaryFileParser:
                 "name": match.group(1),
                 "channels_set_idx": self.current_channels_set,
                 "start_time": None,
-                "file_duration": None,
                 "end_time": None,
                 "seizures": [],
             }
@@ -110,11 +111,6 @@ class SummaryFileParser:
         
         current_file = self.data["files"][self.current_file_index]
         current_file["end_time"] = datetime_obj
-        
-        # Calculate file duration in hours
-        if current_file["start_time"]:
-            delta = datetime_obj - current_file["start_time"]
-            current_file["file_duration"] = delta.total_seconds() / 3600
         
         self.previous_time = datetime_obj
 
@@ -215,6 +211,16 @@ def parse_all_summary_files(dataset_path: str) -> List[PatientSummary]:
                 summary_info.append(patient_info)
             except Exception as e:
                 print(f"Error processing {summary_file}: {e}")
+
+    # Getting the start time and end time of the chb24 patient
+    for file in summary_info[23]["files"]:
+        raw = mne.io.read_raw_edf(os.path.join(dataset_path, "chb24", file["name"]), preload=True)
+
+        start_time = raw.info["meas_date"]
+        end_time = start_time + timedelta(seconds=raw.n_times / raw.info["sfreq"])
+
+        file["start_time"] = start_time
+        file["end_time"] = end_time
     
     return summary_info
 
