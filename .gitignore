@@ -5,9 +5,12 @@ build/
 dist/
 wheels/
 *.egg-info
+.ipynb_checkpoints
 
 # Virtual environments
 .venv
 
 # Dataset
 CHB-MIT/
+
+*.pth

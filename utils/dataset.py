@@ -11,15 +11,15 @@ import numpy as np
 def match_channels(raw: mne.io.Raw, channels: List[str] = COMMON_CHANNELS) -> mne.io.Raw:
     """
     Match the given channels with the channels present in the raw data.
-    
+
     Args:
         raw: The raw data.
         channels: The channels to match.
-        
+
     Returns:
         result: The raw data that matches the given channels.
     """
-    
+
     # Deduplicate T8-P8 channel which has T8-P8-0 and T8-P8-1
     if "T8-P8-0" in raw.ch_names and "T8-P8-1" in raw.ch_names:
         raw.drop_channels("T8-P8-1")
@@ -146,7 +146,7 @@ def preprocess_raw(raw: mne.io.Raw) -> mne.io.Raw:
     raw.filter(l_freq=0.5, h_freq=80, fir_design="firwin", verbose=False)
 
     # Apply notch filter at 50 and 60 Hz to remove powerline noise
-    raw.notch_filter(freqs=[50, 60], fir_design="firwin", verbose=False)
+    raw.notch_filter(freqs=[60], fir_design="firwin", verbose=False)
 
     return raw
 
