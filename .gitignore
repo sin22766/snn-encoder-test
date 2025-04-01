@@ -16,3 +16,5 @@ CHB-MIT/
 *.pth
 
 config.py
+
+lightning_logs/
