@@ -32,7 +32,7 @@ def VectorizeSTFT(eeg_data: torch.Tensor, n_fft=256, hop_length=32, win_length=1
     )
 
     # Reshape back to (batch, channels, freq_bins, time_frames)
-    freq_bins, time_frames = stft.shape[1], stft.shape[2]
+    _, freq_bins, time_frames = stft.shape
     stft_output = stft.reshape(batch_size, n_channels, freq_bins, time_frames)
 
     return stft_output
