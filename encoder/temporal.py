@@ -1,4 +1,5 @@
 import torch
+
 from encoder.base import SpikeEncoder
 
 

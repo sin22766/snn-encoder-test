@@ -14,3 +14,5 @@ dependencies = [
     "pandas>=2.2.3",
     "snntorch>=0.9.4"
 ]
+[tool.ruff.lint]
+extend-select = ["I"]

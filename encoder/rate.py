@@ -1,5 +1,7 @@
 import torch
+
 from encoder.base import SpikeEncoder
+
 
 class PoissonEncoder(SpikeEncoder):
     """

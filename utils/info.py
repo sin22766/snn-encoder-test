@@ -1,9 +1,10 @@
-from datetime import datetime, timedelta
 import os
 import re
+from datetime import datetime, timedelta
 from typing import List
 
 import mne
+
 from utils.constant import COMMON_CHANNELS
 from utils.typing import FileInfo, PatientSummary
 

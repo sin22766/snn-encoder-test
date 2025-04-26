@@ -1,6 +1,7 @@
 import torch
+
 from encoder.base import SpikeEncoder
-from scipy import signal
+
 
 class BSAEncoder(SpikeEncoder):
     """

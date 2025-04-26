@@ -1,8 +1,9 @@
-from typing import TypedDict, Tuple
+from typing import Tuple, TypedDict
+
+import snntorch as snn
 import torch
 import torch.nn as nn
-import snntorch as snn
-from snntorch import surrogate, SConv2dLSTM
+from snntorch import SConv2dLSTM, surrogate
 
 
 class ModelConfig(TypedDict):

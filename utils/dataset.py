@@ -1,11 +1,13 @@
 import math
 import os
+from typing import List, TypedDict
+
 import h5py
 import mne
-from typing import List, TypedDict
+import numpy as np
+
 from utils.constant import COMMON_CHANNELS, EXCLUDE_FILES
 from utils.typing import PatientSummary
-import numpy as np
 
 
 def match_channels(raw: mne.io.Raw, channels: List[str] = COMMON_CHANNELS) -> mne.io.Raw:
