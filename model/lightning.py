@@ -41,12 +41,7 @@ class LitSTFTSeizureClassifier(L.LightningModule):
         scaled_data = VectorizeSTFT(data)
 
         # Convert the data to non complex values
-        scaled_data = scaled_data.real
-
-        # Normalize the data to the range [0, 1]
-        scaled_data = (scaled_data - scaled_data.min()) / (
-            scaled_data.max() - scaled_data.min()
-        )
+        scaled_data = torch.abs(scaled_data)
 
         spikes = self.spike_encoder.encode(scaled_data)
 
