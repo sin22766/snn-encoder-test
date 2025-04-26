@@ -83,15 +83,11 @@ class StepForwardEncoder(SpikeEncoder):
         torch.Tensor
             Decoded continuous values.
         """
-        decoded = torch.zeros_like(x)
-        encoding_base = base.clone()
+        weighted_spikes = x * self.threshold
 
-        decoded.select(-1, 0).copy_(encoding_base)
+        spike_cumsum = torch.cumsum(weighted_spikes, dim=-1)
 
-        for t in range(1, x.shape[-1]):
-            spikes = x.select(-1, t)
-            encoding_base += self.threshold * spikes
-            decoded.select(-1, t).copy_(encoding_base)
+        decoded = base + spike_cumsum
 
         return decoded
         
