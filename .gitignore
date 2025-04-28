@@ -18,3 +18,5 @@ CHB-MIT/
 config.py
 
 lightning_logs/
+
+memray-results/
