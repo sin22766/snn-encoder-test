@@ -63,12 +63,9 @@ class BSAEncoder(SpikeEncoder):
             # Get dimensions
         batch, channels, freqs, time_steps = x.shape
 
-        # Reshape for processing
-        x_reshaped = x.reshape(batch * channels * freqs, time_steps)
-
         # Create output tensor and working copy
-        spike_train = torch.zeros_like(x_reshaped)
-        x_clone = x_reshaped.clone()
+        x_clone = x.clone().reshape(batch * channels * freqs, time_steps)
+        spike_train = torch.zeros_like(x_clone)
 
         # Create tiled filter window
         filter_window = torch.tensor(self.filter, dtype=x.dtype, device=x.device)
