@@ -36,3 +36,12 @@ def VectorizeSTFT(eeg_data: torch.Tensor, n_fft=256, hop_length=32, win_length=1
     stft_output = stft.reshape(batch_size, n_channels, freq_bins, time_frames)
 
     return stft_output
+
+def normalize(x: torch.Tensor) -> torch.Tensor:
+    x_min = x.min(dim=-1, keepdim=True).values
+    x_max = x.max(dim=-1, keepdim=True).values
+
+    diff = x_max - x_min
+    diff[diff == 0] = 1.0
+
+    return (x - x_min) / diff
