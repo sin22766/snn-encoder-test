@@ -63,3 +63,57 @@ class CHBMITDataset(Dataset):
         eeg_raw = self.data[idx]  # EEG data of shape (22, 2048)
         label = self.labels[idx].bool()  # Label: 0 (interictal) or 1 (ictal)
         return eeg_raw, label
+
+
+class CHBMITPreprocessedDataset(Dataset):
+    """
+    PyTorch Dataset for loading preprocessed data and binary labels from an HDF5 file.
+
+    The HDF5 file should contain:
+    - 'data': array-like, shape (n_samples, ...)
+    - 'labels': array-like, shape (n_samples,)
+    """
+
+    def __init__(self, data_file: str) -> None:
+        """
+        Initialize the dataset by loading data and labels from an HDF5 file.
+
+        Parameters
+        ----------
+        data_file : str
+            Path to the HDF5 file containing 'data' and 'labels' datasets.
+        """
+        data = h5py.File(data_file, "r")
+        self.data = torch.tensor(np.array(data["data"]), dtype=torch.float32)
+        self.labels = torch.tensor(np.array(data["labels"]), dtype=torch.float32)
+
+    def __len__(self) -> int:
+        """
+        Return the number of samples in the dataset.
+
+        Returns
+        -------
+        int
+            Total number of samples.
+        """
+        return len(self.data)
+
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        Retrieve the sample and label at the given index.
+
+        Parameters
+        ----------
+        idx : int
+            Index of the sample to retrieve.
+
+        Returns
+        -------
+        tuple of torch.Tensor
+            A tuple (data, label) where:
+            - data is the input features (torch.float32)
+            - label is the binary label converted to a boolean tensor
+        """
+        data = self.data[idx]
+        label = self.labels[idx].bool()
+        return data, label

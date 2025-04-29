@@ -1,3 +1,4 @@
-from dataset.seizure import CHBMITDataset
+from dataset.lightning import CHBMITDataModule
+from dataset.seizure import CHBMITDataset, CHBMITPreprocessedDataset
 
-__all__ = ["CHBMITDataset"]
+__all__ = ["CHBMITDataset", "CHBMITPreprocessedDataset", "CHBMITDataModule"]
