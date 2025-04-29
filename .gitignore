@@ -20,3 +20,5 @@ config.py
 lightning_logs/
 
 memray-results/
+
+*.h5
