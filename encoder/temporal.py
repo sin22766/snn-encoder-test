@@ -1,6 +1,7 @@
 import torch
 
 from encoder.base import SpikeEncoder
+from utils.preprocess import normalize
 
 
 class StepForwardEncoder(SpikeEncoder):
@@ -46,7 +47,7 @@ class StepForwardEncoder(SpikeEncoder):
             Encoded spike train with values {-1, 0, 1}.
         """
         if self.normalize:
-            x = self._normalize(x)  # Normalize along the channel axis
+            x = normalize(x)  # Normalize along the channel axis
 
         spike_train = torch.zeros_like(x)
 
@@ -135,7 +136,7 @@ class TBREncoder(SpikeEncoder):
             Encoded spike train with values {-1, 0, 1}.
         """
         if self.normalize:
-            x = self._normalize(x)  # Normalize along the channel axis
+            x = normalize(x)  # Normalize along the channel axis
 
         padding = torch.zeros_like(x.select(-1, 0).unsqueeze(-1))
         x_diff = x.diff(dim=-1, prepend=padding)

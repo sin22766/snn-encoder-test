@@ -3,6 +3,7 @@ from scipy import signal
 from torch.nn.functional import pad
 
 from encoder.base import SpikeEncoder
+from utils.preprocess import normalize
 
 
 class BSAEncoder(SpikeEncoder):
@@ -58,7 +59,7 @@ class BSAEncoder(SpikeEncoder):
             Encoded spike train with same shape as input.
         """
         if self.normalize:
-            x = self._normalize(x)
+            x = normalize(x)
 
             # Get dimensions
         batch, channels, freqs, time_steps = x.shape

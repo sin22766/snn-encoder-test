@@ -15,28 +15,6 @@ class SpikeEncoder(ABC):
         """Initialize the SpikeEncoder."""
         pass
 
-    def _normalize(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Normalize the input tensor to the range [0, 1].
-        
-        Parameters
-        ----------
-        x : torch.Tensor
-            Input tensor to be normalized.
-            
-        Returns
-        -------
-        torch.Tensor
-            Normalized tensor with values in range [0, 1].
-        """
-        x_min = x.min(dim=-1, keepdim=True).values
-        x_max = x.max(dim=-1, keepdim=True).values
-
-        diff = x_max - x_min
-        diff[diff == 0] = 1
-
-        return (x - x_min) / diff
-
     @abstractmethod
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """

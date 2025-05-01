@@ -97,7 +97,7 @@ class SummaryFileParser:
             return  # No file record created yet
             
         time_str = line.split(":", 1)[1].strip()
-        datetime_obj = self._normalize_time(time_str)
+        datetime_obj = normalize_time(time_str)
         
         self.previous_time = datetime_obj
         self.data["files"][self.current_file_index]["start_time"] = datetime_obj
@@ -108,7 +108,7 @@ class SummaryFileParser:
             return  # No file record created yet or no start time
             
         time_str = line.split(":", 1)[1].strip()
-        datetime_obj = self._normalize_time(time_str)
+        datetime_obj = normalize_time(time_str)
         
         current_file = self.data["files"][self.current_file_index]
         current_file["end_time"] = datetime_obj

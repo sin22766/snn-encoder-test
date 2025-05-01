@@ -38,6 +38,19 @@ def VectorizeSTFT(eeg_data: torch.Tensor, n_fft=256, hop_length=32, win_length=1
     return stft_output
 
 def normalize(x: torch.Tensor) -> torch.Tensor:
+    """
+    Normalize the input tensor to the range [0, 1].
+    
+    Parameters
+    ----------
+    x : torch.Tensor
+        Input tensor to be normalized.
+        
+    Returns
+    -------
+    torch.Tensor
+        Normalized tensor with values in range [0, 1].
+    """
     x_min = x.min(dim=-1, keepdim=True).values
     x_max = x.max(dim=-1, keepdim=True).values
 

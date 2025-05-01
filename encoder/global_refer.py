@@ -1,6 +1,7 @@
 import torch
 
 from encoder.base import SpikeEncoder
+from utils.preprocess import normalize
 
 
 class PhaseEncoder(SpikeEncoder):
@@ -63,7 +64,7 @@ class PhaseEncoder(SpikeEncoder):
             where the time dimension will be padded to be divisible by phase_window.
         """
         if self.normalize:
-            x = self._normalize(x)
+            x = normalize(x)
         
         batch, channels, freqs, time_steps = x.shape
 
@@ -192,7 +193,7 @@ class PhaseEncoderExpand(SpikeEncoder):
             where the time dimension is expanded by the phase_window factor.
         """
         if self.normalize:
-            x = self._normalize(x)  # Normalize along the channel axis
+            x = normalize(x)  # Normalize along the channel axis
         
         batch, channels, freqs, time_steps = x.shape
 
