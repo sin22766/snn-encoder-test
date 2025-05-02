@@ -323,7 +323,6 @@ class LitSTFTFinalSeizureClassifier(L.LightningModule):
 
         # Compute the loss
         loss = self.criterion(spk_rec, targets)
-        accuracy = self.accuracy(spk_rec, targets)
 
         # Log metrics
         loss = self.criterion(spk_rec, targets)
