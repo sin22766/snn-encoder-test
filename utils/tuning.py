@@ -76,7 +76,7 @@ def create_objective(
     return objective
 
 
-def create_dummy_encoder() -> SpikeEncoder:
+def create_dummy_encoder(trial: optuna.Trial) -> SpikeEncoder:
     return DummyEncoder()
 
 

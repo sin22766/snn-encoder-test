@@ -18,6 +18,7 @@ dependencies = [
     "scipy>=1.15.2",
     "lightning>=2.5.1.post0",
     "optuna>=4.3.0",
+    "scikit-learn>=1.6.1",
 ]
 [tool.ruff.lint]
 extend-select = ["I"]

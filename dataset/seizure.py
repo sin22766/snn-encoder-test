@@ -61,7 +61,7 @@ class CHBMITDataset(Dataset):
 
     def __getitem__(self, idx):
         eeg_raw = self.data[idx]  # EEG data of shape (22, 2048)
-        label = self.labels[idx].bool()  # Label: 0 (interictal) or 1 (ictal)
+        label = self.labels[idx]  # Label: 0 (interictal) or 1 (ictal)
         return eeg_raw, label
 
 
@@ -115,5 +115,5 @@ class CHBMITPreprocessedDataset(Dataset):
             - label is the binary label converted to a boolean tensor
         """
         data = self.data[idx]
-        label = self.labels[idx].bool()
+        label = self.labels[idx]
         return data, label
