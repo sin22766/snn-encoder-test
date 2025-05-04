@@ -1,7 +1,6 @@
 import torch
 
-from encoder.base import SpikeEncoder
-from utils.preprocess import normalize
+from .base import SpikeEncoder
 
 
 class PoissonEncoder(SpikeEncoder):
@@ -28,25 +27,10 @@ class PoissonEncoder(SpikeEncoder):
         self,
         interval_freq: int = 4,
         random_seed: int = None,
-        normalize: bool = True,
     ):
-        """
-        Initialize the Poisson Encoder.
-
-        Parameters
-        ----------
-        interval_freq : int, optional
-            Factor by which to downsample the time dimension. Default is 4.
-        random_seed : int, optional
-            Seed for random number generation to ensure reproducible results.
-            Default is None (random behavior).
-        normalize : bool, optional
-            Whether to normalize the input tensor to range [0,1]. Default is True.
-        """
         super().__init__()
-        self.interval_freq = interval_freq
-        self.random_seed = random_seed
-        self.normalize = normalize
+        self._interval_freq = interval_freq
+        self._random_seed = random_seed
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -70,27 +54,24 @@ class PoissonEncoder(SpikeEncoder):
         value as the probability parameter for a Bernoulli distribution, sampling
         spikes stochastically.
         """
-        if self.normalize:
-            x = normalize(x)
-
         batch, channels, freqs, time_steps = x.shape
 
-        padding = -time_steps % self.interval_freq
+        padding = -time_steps % self._interval_freq
 
         padded_x = torch.nn.functional.pad(x, (0, padding), value=float("nan"))
 
-        grouped_x = padded_x.reshape(batch, channels, freqs, -1, self.interval_freq)
+        grouped_x = padded_x.reshape(batch, channels, freqs, -1, self._interval_freq)
 
         downsampled_x = grouped_x.nanmean(dim=-1).repeat_interleave(
-            dim=-1, repeats=self.interval_freq
+            dim=-1, repeats=self._interval_freq
         )
 
         downsampled_x = downsampled_x[..., :time_steps]
 
         # Initialize random generator
         generator = torch.Generator(device=x.device)
-        if self.random_seed is not None:
-            generator.manual_seed(self.random_seed)
+        if self._random_seed is not None:
+            generator.manual_seed(self._random_seed)
 
         spike_train = torch.bernoulli(downsampled_x, generator=generator)
 
@@ -119,15 +100,13 @@ class PoissonEncoder(SpikeEncoder):
         """
         batch, channels, freqs, time_steps = x.shape
 
-        padding = -time_steps % self.interval_freq
+        padding = -time_steps % self._interval_freq
 
         padded_x = torch.nn.functional.pad(x, (0, padding), value=float("nan"))
 
-        grouped_x = padded_x.reshape(batch, channels, freqs, -1, self.interval_freq)
+        grouped_x = padded_x.reshape(batch, channels, freqs, -1, self._interval_freq)
 
-        decoded = grouped_x.nanmean(dim=-1).repeat_interleave(
-            dim=-1, repeats=self.interval_freq
-        )
+        decoded = grouped_x.nanmean(dim=-1).repeat_interleave(dim=-1, repeats=self._interval_freq)
 
         decoded = decoded[..., :time_steps]
 
@@ -151,33 +130,16 @@ class PoissonEncoderExpand(SpikeEncoder):
     random_seed : int, optional
         Seed for random number generation to ensure reproducible results.
         Default is None (random behavior).
-    normalize : bool, optional
-        Whether to normalize the input tensor to range [0,1]. Default is True.
     """
 
     def __init__(
         self,
         interval_freq: int = 4,
         random_seed: int = None,
-        normalize: bool = True,
     ):
-        """
-        Initialize the Poisson Encoder.
-
-        Parameters
-        ----------
-        interval_freq : int, optional
-            Factor by which to expand the time dimension. Default is 4.
-        random_seed : int, optional
-            Seed for random number generation to ensure reproducible results.
-            Default is None (random behavior).
-        normalize : bool, optional
-            Whether to normalize the input tensor to range [0,1]. Default is True.
-        """
         super().__init__()
-        self.interval_freq = interval_freq
-        self.random_seed = random_seed
-        self.normalize = normalize
+        self._interval_freq = interval_freq
+        self._random_seed = random_seed
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -188,6 +150,7 @@ class PoissonEncoderExpand(SpikeEncoder):
         x : torch.Tensor
             Input tensor to be encoded.
             Expected shape: (batch, channels, freqs, time_steps)
+            Must be normalized to the range [0, 1].
 
         Returns
         -------
@@ -201,16 +164,13 @@ class PoissonEncoderExpand(SpikeEncoder):
         value as the probability parameter for a Bernoulli distribution, sampling
         spikes stochastically.
         """
-        if self.normalize:
-            x = normalize(x)  # Normalize along the channel axis
-
         # Expand time dimension by repeating each time step interval_freq times
-        x_repeat = x.repeat_interleave(self.interval_freq, dim=-1)
+        x_repeat = x.repeat_interleave(self._interval_freq, dim=-1)
 
         # Initialize random generator
         generator = torch.Generator(device=x.device)
-        if self.random_seed is not None:
-            generator.manual_seed(self.random_seed)
+        if self._random_seed is not None:
+            generator.manual_seed(self._random_seed)
 
         # Generate spikes via Bernoulli sampling
         # Each value in x_repeat is treated as probability of generating a spike
@@ -241,7 +201,7 @@ class PoissonEncoderExpand(SpikeEncoder):
         time steps, which approximates the original firing probability.
         """
         # Reshape to group each interval_freq time steps
-        x_grouped = x.reshape(*x.shape[:-1], -1, self.interval_freq)
+        x_grouped = x.reshape(*x.shape[:-1], -1, self._interval_freq)
 
         # Average spike count over each group to recover approximate probability
         decoded = x_grouped.mean(dim=-1)

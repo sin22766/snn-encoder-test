@@ -1,24 +1,99 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
 [project]
-name = "snn_encoder_benchmark"
-version = "0.1.0"
-description = "Benchmarking of SNN encoders for EEG data for seizure detection"
-authors = [{ name = "Promchai Chooseang", email = "promchai2sin@gmail.com" }]
+name = "eeg_snn_encoder"
+version = "0.0.1"
+description = "An experimental project for analysis and compare the effect of the spike encoder for the EEG seizure classification task"
+authors = [{ name = "Promchai Chooseang" }]
+license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    # "torch>=2.6.0",
-    "mne>=1.9.0",
-    "h5py>=3.13.0",
-    "ipympl>=0.9.7",
-    "numpy>=2.2.3",
-    "pandas>=2.2.3",
-    "snntorch>=0.9.4",
-    "ipykernel>=6.29.5",
-    "seaborn>=0.13.2",
-    "scipy>=1.15.2",
-    "lightning>=2.5.1.post0",
-    "optuna>=4.3.0",
-    "scikit-learn>=1.6.1",
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
 ]
+requires-python = "==3.12.9"
+dependencies = [
+    "h5py>=3.13.0",
+    "ipykernel>=6.29.5",
+    "ipympl>=0.9.7",
+    "lightning>=2.5.1.post0",
+    "loguru>=0.7.3",
+    "mne>=1.9.0",
+    "optuna>=4.3.0",
+    "pdoc>=15.0.3",
+    "python-dotenv>=1.1.0",
+    "ruff>=0.11.8",
+    "scipy>=1.15.2",
+    "seaborn>=0.13.2",
+    "snntorch>=0.9.4",
+    "torch>=2.7.0",
+    "tqdm>=4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "eeg-snn-encoder",
+]
+
+[tool.uv]
+cache-dir = "/.uv_cache"
+package = false
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+eeg-snn-encoder = { workspace = true }
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.ruff]
+line-length = 99
+src = ["eeg_snn_encoder"]
+include = ["pyproject.toml", "eeg_snn_encoder/**/*.py"]
+
 [tool.ruff.lint]
-extend-select = ["I"]
+extend-select = ["I"] # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["eeg_snn_encoder"]
+force-sort-within-sections = true
+
+[tool.poe]
+executor.type = "auto"
+
+[tool.poe.tasks.requirements]
+help = "Install Python dependencies"
+cmd = "uv pip install -r pyproject.toml"
+
+[tool.poe.tasks.clean]
+help = "Delete all compiled Python files"
+sequence = [
+  { cmd = "find . -type f -name '*.py[co]' -delete" },
+  { cmd = "find . -type d -name '__pycache__' -delete" },
+]
+
+[tool.poe.tasks.lint]
+help = "Check formatting and lint with ruff"
+sequence = [
+  { cmd = "ruff format --check" },
+  { cmd = "ruff check" },
+]
+
+[tool.poe.tasks.format]
+help = "Fix and format source code using ruff"
+sequence = [
+  { cmd = "ruff check --fix" },
+  { cmd = "ruff format" }
+]
+
+[tool.poe.tasks.create_environment]
+help = "Set up Python interpreter environment with uv"
+cmd = "uv venv --python 3.12.9"
+
+[tool.poe.tasks.docs]
+help = "Generate documentation using pdoc"
+cmd = "pdoc eeg_snn_encoder --docformat numpy --math"
