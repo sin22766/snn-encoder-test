@@ -1,6 +1,3 @@
-# Data
-/data/
-
 # Mac OS-specific storage files
 .DS_Store
 
@@ -80,9 +77,6 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# MkDocs documentation
-docs/site/
-
 # PyBuilder
 .pybuilder/
 target/
@@ -155,9 +149,6 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
-
 # mypy
 .mypy_cache/
 .dmypy.json
@@ -184,6 +175,3 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-
-# PDoc output
-docs/

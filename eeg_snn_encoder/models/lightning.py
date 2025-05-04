@@ -56,19 +56,19 @@ class LitSeizureClassifier(L.LightningModule):
 
     def training_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
         data, targets = batch
-        spike_train = self.spike_encoder(data)
+        spike_train = self.spike_encoder.encode(data)
         loss, _ = self._common_step(spike_train, targets, "train")
         return loss
 
     def validation_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
         data, targets = batch
-        spike_train = self.spike_encoder(data)
+        spike_train = self.spike_encoder.encode(data)
         loss, _ = self._common_step(spike_train, targets, "val")
         return loss
 
     def test_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
         data, targets = batch
-        spike_train = self.spike_encoder(data)
+        spike_train = self.spike_encoder.encode(data)
         loss, _ = self._common_step(spike_train, targets, "val", test=True)
         return loss
 
@@ -110,7 +110,7 @@ class LitEvalSeizureClassifier(LitSeizureClassifier):
 
     def test_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
         data, targets = batch
-        spike_train = self.spike_encoder(data)
+        spike_train = self.spike_encoder.encode(data)
         loss, spk_rec = self._common_step(spike_train, targets, "test")
 
         precision = spike_count_precision(spk_rec, targets)
