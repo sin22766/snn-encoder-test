@@ -53,7 +53,9 @@ File Start Time: {{ start_time }}
 File End Time: {{ end_time }}
 
 <group name="seizures*">
+Seizure Start Time: {{ start_time | to_int }} seconds
 Seizure {{ ignore }} Start Time: {{ start_time | to_int }} seconds
+Seizure End Time: {{ end_time | to_int }} seconds
 Seizure {{ ignore }} End Time: {{ end_time | to_int }} seconds
 </group>
 
