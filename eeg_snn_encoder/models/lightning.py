@@ -69,7 +69,22 @@ class LitSeizureClassifier(L.LightningModule):
     def test_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
         data, targets = batch
         spike_train = self.spike_encoder.encode(data)
-        loss, _ = self._common_step(spike_train, targets, "val", test=True)
+        loss, spk_rec = self._common_step(spike_train, targets, "test")
+
+        precision = spike_count_precision(spk_rec, targets)
+        recall = spike_count_recall(spk_rec, targets)
+        f1 = spike_count_f1(spk_rec, targets)
+        mse = spike_count_mse(spk_rec, targets)
+        total_input_spikes = spike_train.sum()
+
+        self.log("test_precision", precision, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test_recall", recall, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test_f1", f1, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test_mse", mse, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(
+            "test_total_spikes", total_input_spikes, on_step=False, on_epoch=True, prog_bar=True
+        )
+
         return loss
 
     def configure_optimizers(self):
@@ -97,34 +112,3 @@ class LitSeizureClassifier(L.LightningModule):
                 "frequency": 1,
             },
         }
-
-
-class LitEvalSeizureClassifier(LitSeizureClassifier):
-    def __init__(
-        self,
-        model: nn.Module,
-        optimizer_config: OptimizerConfig,
-        spike_encoder: SpikeEncoder,
-    ):
-        super().__init__(model, optimizer_config, spike_encoder)
-
-    def test_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
-        data, targets = batch
-        spike_train = self.spike_encoder.encode(data)
-        loss, spk_rec = self._common_step(spike_train, targets, "test")
-
-        precision = spike_count_precision(spk_rec, targets)
-        recall = spike_count_recall(spk_rec, targets)
-        f1 = spike_count_f1(spk_rec, targets)
-        mse = spike_count_mse(spk_rec, targets)
-        total_input_spikes = spike_train.sum()
-
-        self.log("test_precision", precision, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test_recall", recall, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test_f1", f1, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test_mse", mse, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(
-            "test_total_spikes", total_input_spikes, on_step=False, on_epoch=True, prog_bar=True
-        )
-
-        return loss
