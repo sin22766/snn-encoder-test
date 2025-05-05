@@ -130,6 +130,7 @@ class SummaryParser:
                 self.summary["files"].append(
                     {
                         "filename": match.group(1),
+                        "current_channels_set": self.channels_set,
                         "start_time": None,
                         "end_time": None,
                         "seizures": [],
