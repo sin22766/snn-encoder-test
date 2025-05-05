@@ -152,7 +152,9 @@ def all_summary_file_parser(dataset_path: Path) -> List[PatientSummary]:
         A list of dictionaries containing patient ID, sampling rate, channel lists, and file info
         including seizure event annotations.
     """
-    summaries = [summary_file_parser(filepath) for filepath in dataset_path.rglob("*summary.txt")]
+    filelist = list(dataset_path.rglob("*summary.txt"))
+    filelist.sort()
+    summaries = [summary_file_parser(filepath) for filepath in filelist]
 
     # Fill in missing start and end times for case 24
     for summary in summaries:
