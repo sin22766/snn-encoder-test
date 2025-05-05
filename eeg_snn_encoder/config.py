@@ -28,5 +28,6 @@ try:
 
     logger.remove()
     logger.add(lambda msg: tqdm.write(msg, end=""), colorize=True)
+    logger.add(PROJ_ROOT / "logs" / "model_{time}.log")
 except ModuleNotFoundError:
     pass
