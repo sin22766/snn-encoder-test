@@ -30,6 +30,7 @@ dependencies = [
     "snntorch>=0.9.4",
     "torch>=2.7.0",
     "tqdm>=4.67.1",
+    "ttp>=0.9.5",
 ]
 
 [dependency-groups]

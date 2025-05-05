@@ -255,6 +255,7 @@ dependencies = [
     { name = "snntorch" },
     { name = "torch" },
     { name = "tqdm" },
+    { name = "ttp" },
 ]
 
 [package.dev-dependencies]
@@ -279,6 +280,7 @@ requires-dist = [
     { name = "snntorch", specifier = ">=0.9.4" },
     { name = "torch", specifier = ">=2.7.0", index = "https://download.pytorch.org/whl/cu126" },
     { name = "tqdm", specifier = ">=4.67.1" },
+    { name = "ttp", specifier = ">=0.9.5" },
 ]
 
 [package.metadata.requires-dev]
@@ -1491,6 +1493,15 @@ dependencies = [
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/11/53/ce18470914ab6cfbec9384ee565d23c4d1c55f0548160b1c7b33000b11fd/triton-3.3.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:b68c778f6c4218403a6bd01be7484f6dc9e20fe2083d22dd8aef33e3b87a10a3", size = 156504509 },
+]
+
+[[package]]
+name = "ttp"
+version = "0.9.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6e/4f/b95e48d3b653e1b1494a3a5b15614db5a340826282c5389e38cb2248da39/ttp-0.9.5.tar.gz", hash = "sha256:234414f4d3039d2d1cde09993f89f8db1b34d447f76c6a402555cefac2e59c4e", size = 69141 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/03/38/d475e7bde8d192ca5d64ccc0988f3d58f36211bd68c32b6c5883332a8abf/ttp-0.9.5-py2.py3-none-any.whl", hash = "sha256:2c9fcf560b3f696e9fdd3554dc8e4622cbb10cac1d4fca13a7cf608c4a7fd137", size = 85763 },
 ]
 
 [[package]]
