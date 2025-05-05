@@ -160,7 +160,7 @@ def all_summary_file_parser(dataset_path: Path) -> List[PatientSummary]:
             if file["start_time"] is None or file["end_time"] is None:
                 # Read the EDF file to get the start and end times
                 edf_path = dataset_path / summary["patient_id"] / file["filename"]
-                raw = read_raw_edf(edf_path, preload=True, verbose=0)
+                raw = read_raw_edf(edf_path, preload=True, verbose=40)
                 start_time = raw.info["meas_date"]
                 end_time = start_time + timedelta(seconds=raw.n_times / raw.info["sfreq"])
 
