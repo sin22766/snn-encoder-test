@@ -53,10 +53,10 @@ File Start Time: {{ start_time }}
 File End Time: {{ end_time }}
 
 <group name="seizures*">
-Seizure Start Time: {{ start_time | to_int }} seconds
-Seizure {{ ignore }} Start Time: {{ start_time | to_int }} seconds
-Seizure End Time: {{ end_time | to_int }} seconds
-Seizure {{ ignore }} End Time: {{ end_time | to_int }} seconds
+Seizure Start Time: {{ start_time | _start_ | to_int }} seconds
+Seizure {{ ignore }} Start Time: {{ start_time | _start_ | to_int }} seconds
+Seizure End Time: {{ end_time | _start_ | to_int }} seconds
+Seizure {{ ignore }} End Time: {{ end_time | _start_ | to_int }} seconds
 </group>
 
 </group>
@@ -127,6 +127,7 @@ def summary_file_parser(filepath: Path) -> PatientSummary:
                     base_date += timedelta(days=1)
                 if end_time < last_end:
                     end_time += timedelta(days=1)
+                    base_date += timedelta(days=1)
 
             file_info: FileInfo = {
                 "filename": file["filename"],
