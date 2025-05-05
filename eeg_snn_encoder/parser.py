@@ -116,24 +116,17 @@ def summary_file_parser(filepath: Path) -> PatientSummary:
 
     for idx, info in enumerate(parsed["channel_infos"]):
         for file in info["files"]:
-            if "start_time" in file:
-                start_time = normalize_time(file["start_time"], base_date)
-            else:
-                start_time = None
-
-            if "end_time" in file:
-                end_time = normalize_time(file["end_time"], base_date)
-            else:
-                end_time = None
+            start_time = normalize_time(file.get("start_time"), base_date) if "start_time" in file else None
+            end_time = normalize_time(file.get("end_time"), base_date) if "end_time" in file else None
 
             if data["files"] and start_time and end_time:
                 last_end = data["files"][-1]["end_time"]
                 if start_time < last_end:
                     start_time += timedelta(days=1)
+                    end_time += timedelta(days=1)
                     base_date += timedelta(days=1)
                 if end_time < last_end:
                     end_time += timedelta(days=1)
-                    base_date += timedelta(days=1)
 
             file_info: FileInfo = {
                 "filename": file["filename"],
