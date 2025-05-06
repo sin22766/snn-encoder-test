@@ -3,7 +3,6 @@ from typing import Tuple, TypedDict
 import lightning as L
 import snntorch.functional as SF
 import torch
-from torch import nn
 from torch.optim import AdamW, lr_scheduler
 from torch.utils.data import DataLoader
 
@@ -15,6 +14,7 @@ from eeg_snn_encoder.metrics import (
     spike_count_precision,
     spike_count_recall,
 )
+from eeg_snn_encoder.models.classifier import EEGSTFTSpikeClassifier, ModelConfig
 
 
 class OptimizerConfig(TypedDict):
@@ -27,12 +27,12 @@ class OptimizerConfig(TypedDict):
 class LitSeizureClassifier(L.LightningModule):
     def __init__(
         self,
-        model: nn.Module,
+        model_config: ModelConfig,
         optimizer_config: OptimizerConfig,
         spike_encoder: SpikeEncoder,
     ):
         super().__init__()
-        self.model = model
+        self.model = EEGSTFTSpikeClassifier(config=model_config)
         self.optimizer_config = optimizer_config
         self.spike_encoder = spike_encoder
 
