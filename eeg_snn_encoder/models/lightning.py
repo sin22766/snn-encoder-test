@@ -32,7 +32,7 @@ class LitSeizureClassifier(L.LightningModule):
         spike_encoder: SpikeEncoder,
     ):
         super().__init__()
-        self.model = EEGSTFTSpikeClassifier(config=model_config)
+        self.model = EEGSTFTSpikeClassifier(config=model_config).to(self.device)
         self.optimizer_config = optimizer_config
         self.spike_encoder = spike_encoder
 
@@ -41,35 +41,40 @@ class LitSeizureClassifier(L.LightningModule):
     def forward(self, data: torch.Tensor) -> torch.Tensor:
         return self.model(data)
 
-    def _common_step(
-        self, spike_train: torch.Tensor, targets: torch.Tensor, phase: str
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def training_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
+        data, targets = batch
+        data, targets = data.to(self.device), targets.to(self.device)
+        spike_train = self.spike_encoder.encode(data)
         spk_rec, _ = self.model(spike_train)
 
         loss = self.criterion(spk_rec, targets)
-        accuracy = spike_count_accuracy(spk_rec, targets)
+        accuracy = SF.accuracy_rate(spk_rec, targets)
 
-        self.log(f"{phase}_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(f"{phase}_acc", accuracy, on_step=False, on_epoch=True, prog_bar=True)
-
-        return loss, spk_rec
-
-    def training_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
-        data, targets = batch
-        spike_train = self.spike_encoder.encode(data)
-        loss, _ = self._common_step(spike_train, targets, "train")
+        self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train_acc", accuracy, on_step=False, on_epoch=True, prog_bar=True)
         return loss
 
     def validation_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
         data, targets = batch
+        data, targets = data.to(self.device), targets.to(self.device)
         spike_train = self.spike_encoder.encode(data)
-        loss, _ = self._common_step(spike_train, targets, "val")
+        spk_rec, _ = self.model(spike_train)
+
+        loss = self.criterion(spk_rec, targets)
+        accuracy = SF.accuracy_rate(spk_rec, targets)
+
+        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("val_acc", accuracy, on_step=False, on_epoch=True, prog_bar=True)
         return loss
 
     def test_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
         data, targets = batch
+        data, targets = data.to(self.device), targets.to(self.device)
         spike_train = self.spike_encoder.encode(data)
-        loss, spk_rec = self._common_step(spike_train, targets, "test")
+        spk_rec, _ = self.model(spike_train)
+
+        loss = self.criterion(spk_rec, targets)
+        accuracy = SF.accuracy_rate(spk_rec, targets)
 
         precision = spike_count_precision(spk_rec, targets)
         recall = spike_count_recall(spk_rec, targets)
@@ -77,6 +82,8 @@ class LitSeizureClassifier(L.LightningModule):
         mse = spike_count_mse(spk_rec, targets)
         total_input_spikes = spike_train.sum()
 
+        self.log("test_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test_acc", accuracy, on_step=False, on_epoch=True, prog_bar=True)
         self.log("test_precision", precision, on_step=False, on_epoch=True, prog_bar=True)
         self.log("test_recall", recall, on_step=False, on_epoch=True, prog_bar=True)
         self.log("test_f1", f1, on_step=False, on_epoch=True, prog_bar=True)
