@@ -48,11 +48,11 @@ class LitSeizureClassifier(L.LightningModule):
 
         loss = self.criterion(spk_rec, targets)
         accuracy = SF.accuracy_rate(spk_rec, targets)
-        f1 = spike_count_f1(spk_rec, targets)
+        mse = spike_count_mse(spk_rec, targets)
 
         self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log("train_acc", accuracy, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("train_f1", f1, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train_mse", mse, on_step=False, on_epoch=True, prog_bar=True)
         return loss
 
     def validation_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
@@ -64,10 +64,12 @@ class LitSeizureClassifier(L.LightningModule):
         loss = self.criterion(spk_rec, targets)
         accuracy = SF.accuracy_rate(spk_rec, targets)
         f1 = spike_count_f1(spk_rec, targets)
+        mse = spike_count_mse(spk_rec, targets)
 
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log("val_acc", accuracy, on_step=False, on_epoch=True, prog_bar=True)
         self.log("val_f1", f1, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("val_mse", mse, on_step=False, on_epoch=True, prog_bar=True)
         return loss
 
     def test_step(self, batch: DataLoader, batch_idx: int) -> torch.Tensor:
