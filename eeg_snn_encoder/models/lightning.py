@@ -1,4 +1,4 @@
-from typing import Tuple, TypedDict
+from typing import TypedDict
 
 import lightning as L
 import snntorch.functional as SF
@@ -8,7 +8,6 @@ from torch.utils.data import DataLoader
 
 from eeg_snn_encoder.encoders.base import SpikeEncoder
 from eeg_snn_encoder.metrics import (
-    spike_count_accuracy,
     spike_count_f1,
     spike_count_mse,
     spike_count_precision,
@@ -80,7 +79,7 @@ class LitSeizureClassifier(L.LightningModule):
         recall = spike_count_recall(spk_rec, targets)
         f1 = spike_count_f1(spk_rec, targets)
         mse = spike_count_mse(spk_rec, targets)
-        total_input_spikes = spike_train.sum()
+        mean_spike_per_batch = spike_train.count_nonzero() / spike_train.shape[0]
 
         self.log("test_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log("test_acc", accuracy, on_step=False, on_epoch=True, prog_bar=True)
@@ -89,7 +88,7 @@ class LitSeizureClassifier(L.LightningModule):
         self.log("test_f1", f1, on_step=False, on_epoch=True, prog_bar=True)
         self.log("test_mse", mse, on_step=False, on_epoch=True, prog_bar=True)
         self.log(
-            "test_total_spikes", total_input_spikes, on_step=False, on_epoch=True, prog_bar=True
+            "test_total_spikes", mean_spike_per_batch, on_step=False, on_epoch=True, prog_bar=True
         )
 
         return loss
