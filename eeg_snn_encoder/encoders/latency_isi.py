@@ -188,7 +188,7 @@ class BurstEncoderExpand(SpikeEncoder):
 
         spike_index = torch.arange(0, self._max_window, 1).expand(
             (batch * channels * freqs, time_steps, self._max_window)
-        )
+        ).to(device=x.device)
 
         spike_count = torch.ceil(x_reshaped * self._n_max)
         isi = torch.ceil(self._t_max - (x_reshaped * (self._t_max - self._t_min)))
