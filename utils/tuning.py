@@ -63,7 +63,7 @@ def create_objective(
             devices=1,
             logger=False,
             callbacks=[
-                PyTorchLightningPruningCallback(trial, monitor="val_loss"),
+                PyTorchLightningPruningCallback(trial, monitor="val_mse"),
             ],
         )
 
