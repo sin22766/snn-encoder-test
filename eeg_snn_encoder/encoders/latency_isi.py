@@ -64,7 +64,7 @@ class BurstEncoder(SpikeEncoder):
 
         padding = -time_steps % self._max_window
 
-        padded_x = torch.nn.functional.pad(x, (0, padding), value=float("nan"))
+        padded_x = torch.nn.functional.pad(x, (0, padding), value=float("nan")).to(device=x.device)
 
         downsampled_x = padded_x.reshape(batch * channels * freqs, -1, self._max_window).nanmean(
             dim=-1
@@ -72,7 +72,7 @@ class BurstEncoder(SpikeEncoder):
 
         spike_index = torch.arange(0, self._max_window, 1).expand(
             (batch * channels * freqs, downsampled_x.shape[1], self._max_window)
-        )
+        ).to(device=x.device)
 
         spike_count = torch.ceil(downsampled_x * self._n_max)
         isi = torch.ceil(self._t_max - (downsampled_x * (self._t_max - self._t_min)))
