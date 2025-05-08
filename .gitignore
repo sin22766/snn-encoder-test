@@ -178,3 +178,5 @@ cython_debug/
 .pypirc
 
 optuna_cache.db
+
+lightning_logs/

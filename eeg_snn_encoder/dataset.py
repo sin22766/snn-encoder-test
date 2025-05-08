@@ -78,12 +78,22 @@ class CHBMITDataModule(L.LightningDataModule):
         self.train_dataset, self.val_dataset, self.test_dataset = random_split(
             self.dataset, [0.7, 0.15, 0.15]
         )
-        
+
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.worker, pin_memory=True)
+        return DataLoader(
+            self.train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.worker,
+            pin_memory=True,
+        )
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.worker, pin_memory=True)
+        return DataLoader(
+            self.val_dataset, batch_size=self.batch_size, num_workers=self.worker, pin_memory=True
+        )
 
     def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.worker, pin_memory=True)
+        return DataLoader(
+            self.test_dataset, batch_size=self.batch_size, num_workers=self.worker, pin_memory=True
+        )

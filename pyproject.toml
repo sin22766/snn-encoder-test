@@ -42,7 +42,7 @@ dev = [
 ]
 
 [tool.uv]
-cache-dir = "/.uv_cache"
+cache-dir = "../.uv_cache"
 package = false
 
 [tool.uv.sources]
