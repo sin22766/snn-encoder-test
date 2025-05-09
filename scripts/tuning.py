@@ -6,8 +6,6 @@ import papermill as pm
 from eeg_snn_encoder.config import PROJ_ROOT
 
 notebooks = [
-    PROJ_ROOT / "notebooks" / "3-model-tuning-Dummy.ipynb",
-    PROJ_ROOT / "notebooks" / "3-model-tuning-SF.ipynb",
     PROJ_ROOT / "notebooks" / "3-model-tuning-PE.ipynb",
 ]
 

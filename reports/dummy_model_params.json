@@ -1,0 +1,16 @@
+{
+    "model_params": {
+        "threshold": 0.05185909342525178,
+        "slope": 15.20962706659857,
+        "beta": 0.8476594325109652,
+        "dropout_rate1": 0.4475327566824936,
+        "dropout_rate2": 0.5218167934699668
+    },
+    "optimizer_params": {
+        "lr": 9.262579298755302e-05,
+        "weight_decay": 3.6938685805227336e-05,
+        "scheduler_factor": 0.18576585063507123,
+        "scheduler_patience": 6
+    },
+    "encoder_params": {}
+}
