@@ -277,11 +277,11 @@ def create_objective(
     def objective(trial: optuna.Trial) -> float:
         if model_config is None:
             model_params: ModelConfig = {
-                "input_size": trial.suggest_int("input_size", 1, 128),
-                "hidden_size": trial.suggest_int("hidden_size", 1, 128),
-                "output_size": trial.suggest_int("output_size", 1, 128),
-                "num_layers": trial.suggest_int("num_layers", 1, 3),
-                "dropout": trial.suggest_float("dropout", 0.0, 0.5),
+                "threshold": trial.suggest_float("threshold", 0.01, 0.5),
+                "slope": trial.suggest_float("slope", 1.0, 20.0),
+                "beta": trial.suggest_float("beta", 0.1, 0.99),
+                "dropout_rate1": trial.suggest_float("dropout_rate1", 0.1, 0.99),
+                "dropout_rate2": trial.suggest_float("dropout_rate2", 0.1, 0.99),
             }
         else:
             model_params = model_config
