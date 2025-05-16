@@ -58,7 +58,7 @@ explicit = true
 [tool.ruff]
 line-length = 99
 src = ["eeg_snn_encoder"]
-include = ["pyproject.toml", "eeg_snn_encoder/**/*.py"]
+include = ["pyproject.toml", "eeg_snn_encoder/**/*.py", "notebooks/**/*.ipynb"]
 
 [tool.ruff.lint]
 extend-select = ["I"] # Add import sorting
