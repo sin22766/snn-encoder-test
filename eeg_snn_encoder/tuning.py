@@ -4,7 +4,6 @@ from typing import Callable, List, TypedDict
 import lightning.pytorch as pl
 from lightning.pytorch import LightningDataModule
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
-from loguru import logger
 import optuna
 from optuna_integration import PyTorchLightningPruningCallback
 
@@ -26,9 +25,12 @@ class TrialFilter(TypedDict):
     """
     A dictionary to define the filter function for trials.
 
-    Attributes:
-        name (str): The name of the study.
-        filter_fn (callable): A function that takes a trial and returns True if it should be included.
+    Attributes
+    ----------
+    name : str
+        The name of the study.
+    filter_fn : callable
+        A function that takes a trial and returns True if it should be included.
     """
 
     name: str
@@ -39,13 +41,23 @@ def filter_and_sort_trials(study_configs: List[TrialFilter], storage_url=None):
     """
     Load, filter, and sort trials from multiple Optuna studies based on custom filters.
 
-    Args:
-        study_configs (list): List of dictionaries containing study configurations.
-                              Each dict should have 'name' and 'filter_fn' keys.
-        storage_url (str, optional): The Optuna storage URL. If None, uses os.environ["OPTUNA_CONN_STRING"].
+    Parameters
+    ----------
+    study_configs : list of dict
+        List of dictionaries containing study configurations.
+        Each dict should have 'name' and 'filter_fn' keys.
+    storage_url : str, optional
+        The Optuna storage URL. If None, uses os.environ["OPTUNA_CONN_STRING"].
 
-    Returns:
-        list: Sorted filtered trials from all studies
+    Returns
+    -------
+    list
+        Sorted filtered trials from all studies.
+
+    Raises
+    ------
+    ValueError
+        If no storage URL is provided and OPTUNA_CONN_STRING environment variable is not set.
     """
 
     # Use provided storage URL or fall back to environment variable
@@ -83,11 +95,15 @@ def burst_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     """
     Create a BurstEncoder with parameters tuned by Optuna.
 
-    Args:
-        trial: Optuna trial for hyperparameter optimization
+    Parameters
+    ----------
+    trial : optuna.Trial
+        Optuna trial for hyperparameter optimization.
 
-    Returns:
-        Configured BurstEncoder instance
+    Returns
+    -------
+    BurstEncoder
+        Configured BurstEncoder instance.
     """
     max_window = trial.suggest_int("burst_max_window", 4, 8)
     n_max = trial.suggest_int("burst_n_max", 1, max_window)
@@ -108,11 +124,15 @@ def phase_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     """
     Create a PhaseEncoder with parameters tuned by Optuna.
 
-    Args:
-        trial: Optuna trial for hyperparameter optimization
+    Parameters
+    ----------
+    trial : optuna.Trial
+        Optuna trial for hyperparameter optimization.
 
-    Returns:
-        Configured PhaseEncoder instance
+    Returns
+    -------
+    PhaseEncoder
+        Configured PhaseEncoder instance.
     """
     encoder_params = {
         "phase_window": trial.suggest_int("phase_window", 1, 4),
@@ -125,11 +145,15 @@ def poisson_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     """
     Create a PoissonEncoder with parameters tuned by Optuna.
 
-    Args:
-        trial: Optuna trial for hyperparameter optimization
+    Parameters
+    ----------
+    trial : optuna.Trial
+        Optuna trial for hyperparameter optimization.
 
-    Returns:
-        Configured PoissonEncoder instance
+    Returns
+    -------
+    PoissonEncoder
+        Configured PoissonEncoder instance.
     """
     encoder_params = {
         "interval_freq": trial.suggest_int("poisson_interval_freq", 1, 8),
@@ -143,11 +167,15 @@ def bsa_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     """
     Create a BSAEncoder with parameters tuned by Optuna.
 
-    Args:
-        trial: Optuna trial for hyperparameter optimization
+    Parameters
+    ----------
+    trial : optuna.Trial
+        Optuna trial for hyperparameter optimization.
 
-    Returns:
-        Configured BSAEncoder instance
+    Returns
+    -------
+    BSAEncoder
+        Configured BSAEncoder instance.
     """
     encoder_params = {
         "win_size": trial.suggest_int("bsa_win_size", 1, 16),
@@ -162,11 +190,15 @@ def step_forward_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     """
     Create a StepForwardEncoder with parameters tuned by Optuna.
 
-    Args:
-        trial: Optuna trial for hyperparameter optimization
+    Parameters
+    ----------
+    trial : optuna.Trial
+        Optuna trial for hyperparameter optimization.
 
-    Returns:
-        Configured StepForwardEncoder instance
+    Returns
+    -------
+    StepForwardEncoder
+        Configured StepForwardEncoder instance.
     """
     encoder_params = {
         "threshold": trial.suggest_float("sf_threshold", 0.01, 4),
@@ -179,11 +211,15 @@ def tbr_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     """
     Create a TBREncoder with parameters tuned by Optuna.
 
-    Args:
-        trial: Optuna trial for hyperparameter optimization
+    Parameters
+    ----------
+    trial : optuna.Trial
+        Optuna trial for hyperparameter optimization.
 
-    Returns:
-        Configured TBREncoder instance
+    Returns
+    -------
+    TBREncoder
+        Configured TBREncoder instance.
     """
     encoder_params = {
         "threshold": trial.suggest_float("tbr_threshold", 0.01, 4),
@@ -214,11 +250,25 @@ def create_objective(
     """
     Create an objective function for Optuna based on the encoder type.
 
-    Args:
-        encoder_type (str): The type of encoder to tune.
+    Parameters
+    ----------
+    encoder_type : str
+        The type of encoder to tune.
+    datamodule : LightningDataModule
+        The data module for training and validation.
+    moniter_metric : str, optional
+        The metric to monitor for optimization (default is "val_mse").
+    moniter_mode : str, optional
+        The mode for the monitored metric, "min" or "max" (default is "min").
+    model_config : ModelConfig, optional
+        Model configuration dictionary. If None, will be suggested by Optuna.
+    optimizer_config : OptimizerConfig, optional
+        Optimizer configuration dictionary. If None, will be suggested by Optuna.
 
-    Returns:
-        callable: The objective function for Optuna.
+    Returns
+    -------
+    callable
+        The objective function for Optuna.
     """
     if encoder_type not in ENCODER_TUNING_FUNCTIONS:
         valid_types = list(ENCODER_TUNING_FUNCTIONS.keys())
@@ -277,5 +327,5 @@ def create_objective(
         trainer.fit(lit_model, datamodule=datamodule)
 
         return tracker.best_metric
-    
+
     return objective
