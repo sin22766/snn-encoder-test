@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import torch
 
@@ -33,7 +34,7 @@ class SpikeEncoder(ABC):
         pass
 
     @abstractmethod
-    def decode(self, x: torch.Tensor) -> torch.Tensor:
+    def decode(self, x: torch.Tensor, decode_params=None) -> torch.Tensor:
         """
         Decode spike trains back to continuous values.
 
@@ -48,3 +49,19 @@ class SpikeEncoder(ABC):
             Decoded continuous values.
         """
         pass
+
+    def get_decode_params(self, x: torch.Tensor) -> Optional[dict]:
+        """
+        Get parameters for decoding.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor to be encoded, with shape (Batch, Channels, Freqs, Times).
+
+        Returns
+        -------
+        Optional[dict]
+            Parameters needed for decoding.
+        """
+        return None

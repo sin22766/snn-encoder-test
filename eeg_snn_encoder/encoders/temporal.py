@@ -1,6 +1,21 @@
+from typing import Optional, TypedDict
+
 import torch
 
 from .base import SpikeEncoder
+
+
+class SFDecodeParams(TypedDict):
+    """
+    Type definition for the parameters needed for decoding.
+
+    Parameters
+    ----------
+    base : torch.Tensor
+        Initial baseline values for decoding.
+    """
+
+    base: torch.Tensor
 
 
 class StepForwardEncoder(SpikeEncoder):
@@ -59,7 +74,7 @@ class StepForwardEncoder(SpikeEncoder):
 
         return spike_train
 
-    def decode(self, x: torch.Tensor, base: torch.Tensor) -> torch.Tensor:
+    def decode(self, x: torch.Tensor, decode_params: Optional[SFDecodeParams] = None) -> torch.Tensor:
         """
         Decode spike trains back to continuous values.
 
@@ -75,6 +90,14 @@ class StepForwardEncoder(SpikeEncoder):
         torch.Tensor
             Decoded continuous values.
         """
+        if decode_params is None:
+            raise ValueError("decode_params must be provided for decoding.")
+        
+        if "base" not in decode_params:
+            raise ValueError("decode_params must contain 'base'.")
+        
+        base = decode_params["base"]
+
         weighted_spikes = x * self._threshold
 
         spike_cumsum = torch.cumsum(weighted_spikes, dim=-1)
@@ -82,6 +105,42 @@ class StepForwardEncoder(SpikeEncoder):
         decoded = base + spike_cumsum
 
         return decoded
+
+    def get_decode_params(self, x: torch.Tensor) -> SFDecodeParams:
+        """
+        Get the parameters needed for decoding.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor to be encoded, with shape (Batch, Channels, Freqs, Times).
+
+        Returns
+        -------
+        SFDecodeParams
+            Dict containing the encoding base.
+        """
+        encoding_base = x.select(-1, 0).unsqueeze(-1)
+
+        return {
+            "base": encoding_base,
+        }
+
+
+class TBRDecodeParams(TypedDict):
+    """
+    Type definition for the parameters needed for decoding.
+
+    Parameters
+    ----------
+    base : torch.Tensor
+        Initial baseline values for decoding.
+    threshold : torch.Tensor
+        Threshold values used for decoding.
+    """
+
+    base: torch.Tensor
+    threshold: torch.Tensor
 
 
 class TBREncoder(SpikeEncoder):
@@ -133,7 +192,7 @@ class TBREncoder(SpikeEncoder):
 
         return spike_train
 
-    def decode(self, x: torch.Tensor, base: torch.Tensor, threshold: torch.Tensor) -> torch.Tensor:
+    def decode(self, x: torch.Tensor, decode_params: Optional[TBRDecodeParams] = None) -> torch.Tensor:
         """
         Decode spike trains back to continuous values.
 
@@ -151,10 +210,19 @@ class TBREncoder(SpikeEncoder):
         torch.Tensor
             Decoded continuous values.
         """
+        if decode_params is None:
+            raise ValueError("decode_params must be provided for decoding.")
+        
+        if "base" not in decode_params or "threshold" not in decode_params:
+            raise ValueError("decode_params must contain 'base' and 'threshold'.")
+        
+        threshold = decode_params["threshold"]
+        base = decode_params["base"]
+
         decoded = (x.cumsum(dim=-1) * threshold) + base
         return decoded
 
-    def get_decode_parameters(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    def get_decode_params(self, x: torch.Tensor) -> TBRDecodeParams:
         """
         Get the parameters needed for decoding.
 
@@ -165,8 +233,8 @@ class TBREncoder(SpikeEncoder):
 
         Returns
         -------
-        tuple[torch.Tensor, torch.Tensor]
-            Tuple containing the encoding base and threshold.
+        TBRDecodeParams
+            Dict containing the encoding base and threshold.
         """
         padding = torch.zeros_like(x.select(-1, 0).unsqueeze(-1))
         x_diff = x.diff(dim=-1, prepend=padding)
@@ -174,4 +242,8 @@ class TBREncoder(SpikeEncoder):
             torch.std(x_diff, dim=-1, keepdim=True) * self._threshold
         )
         encoding_base = x.select(-1, 0).clone().unsqueeze(-1)
-        return encoding_base, threshold
+
+        return {
+            "base": encoding_base,
+            "threshold": threshold,
+        }

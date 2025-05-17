@@ -76,7 +76,7 @@ class BSAEncoder(SpikeEncoder):
         # Reshape back to original dimensions
         return spike_train.reshape(batch, channels, freqs, time_steps)
 
-    def decode(self, x: torch.Tensor) -> torch.Tensor:
+    def decode(self, x: torch.Tensor, decode_params=None) -> torch.Tensor:
         """
         Decode a spike train back to continuous values.
 

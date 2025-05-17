@@ -204,7 +204,7 @@ class BurstEncoderExpand(SpikeEncoder):
 
         return spike_train
 
-    def decode(self, x: torch.Tensor) -> torch.Tensor:
+    def decode(self, x: torch.Tensor, decode_params=None) -> torch.Tensor:
         """
         Decode burst spike trains back to continuous values.
 
