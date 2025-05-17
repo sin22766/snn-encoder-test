@@ -70,7 +70,7 @@ class PhaseEncoder(SpikeEncoder):
         spike_train = spike_train.reshape(batch, channels, freqs, time_steps + padding)
         return spike_train
 
-    def decode(self, x: torch.Tensor) -> torch.Tensor:
+    def decode(self, x: torch.Tensor, decode_params=None) -> torch.Tensor:
         """
         Decode a spike train back to continuous values.
 
