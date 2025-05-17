@@ -1,3 +1,4 @@
+import gc
 import os
 from typing import Callable, List, TypedDict
 
@@ -6,6 +7,7 @@ from lightning.pytorch import LightningDataModule
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 import optuna
 from optuna_integration import PyTorchLightningPruningCallback
+import torch
 
 from eeg_snn_encoder.callback import TrackBestMetric
 from eeg_snn_encoder.encoders import (
@@ -16,6 +18,7 @@ from eeg_snn_encoder.encoders import (
     SpikeEncoder,
     StepForwardEncoder,
     TBREncoder,
+    DummyEncoder
 )
 from eeg_snn_encoder.models.classifier import ModelConfig
 from eeg_snn_encoder.models.lightning import LitSeizureClassifier, OptimizerConfig
@@ -135,7 +138,7 @@ def phase_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
         Configured PhaseEncoder instance.
     """
     encoder_params = {
-        "phase_window": trial.suggest_int("phase_window", 1, 4),
+        "phase_window": trial.suggest_int("phase_window", 1, 8),
     }
 
     return PhaseEncoder(**encoder_params)
@@ -227,6 +230,23 @@ def tbr_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
 
     return TBREncoder(**encoder_params)
 
+def dummy_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
+    """
+    Create a DummyEncode.
+
+    Parameters
+    ----------
+    trial : optuna.Trial
+        Optuna trial for hyperparameter optimization.
+
+    Returns
+    -------
+    DummyEncode
+        DummyEncode instance.
+    """
+
+    return DummyEncoder()
+
 
 # Dictionary mapping encoder types to their respective tuning functions
 ENCODER_TUNING_FUNCTIONS = {
@@ -236,6 +256,7 @@ ENCODER_TUNING_FUNCTIONS = {
     "bsa": bsa_encoder_tuning,
     "sf": step_forward_encoder_tuning,
     "tbr": tbr_encoder_tuning,
+    "dummy": dummy_encoder_tuning,
 }
 
 
@@ -310,7 +331,7 @@ def create_objective(
         )
 
         trainer = pl.Trainer(
-            max_epochs=20,
+            max_epochs=30,
             accelerator="auto",
             devices="auto",
             strategy="auto",
@@ -319,12 +340,26 @@ def create_objective(
             callbacks=[
                 tracker,
                 PyTorchLightningPruningCallback(trial, monitor=moniter_metric),
-                EarlyStopping(monitor="val_loss", mode="min", patience=5),
+                EarlyStopping(monitor="val_loss", mode="min", patience=15),
             ],
             logger=False,
         )
 
         trainer.fit(lit_model, datamodule=datamodule)
+
+        loss = trainer.callback_metrics["val_loss"].item()
+        accuracy = trainer.callback_metrics["val_acc"].item()
+        f1 = trainer.callback_metrics["val_f1"].item()
+
+        trial.set_user_attr("loss", loss)
+        trial.set_user_attr("accuracy", accuracy)
+        trial.set_user_attr("f1", f1)
+
+        del trainer
+        del lit_model
+        del spike_encoder
+        gc.collect()
+        torch.cuda.empty_cache()
 
         return tracker.best_metric
 
