@@ -5,6 +5,7 @@ from typing import Callable, List, TypedDict
 import lightning.pytorch as pl
 from lightning.pytorch import LightningDataModule
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
+from loguru import logger
 import optuna
 from optuna_integration import PyTorchLightningPruningCallback
 import torch
@@ -360,6 +361,8 @@ def create_objective(
         del spike_encoder
         gc.collect()
         torch.cuda.empty_cache()
+
+        logger.info(f"Trial {trial.number} finish with {moniter_metric}: {tracker.best_metric}")
 
         return tracker.best_metric
 
