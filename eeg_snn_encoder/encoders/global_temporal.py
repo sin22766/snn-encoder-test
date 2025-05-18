@@ -28,6 +28,9 @@ class PhaseEncoder(SpikeEncoder):
 
         self._phase_values = torch.pow(2.0, -torch.arange(1, phase_window + 1))
 
+    def __repr__(self) -> str:
+        return f"PhaseEncoder(phase_window={self._phase_window})"
+
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
         Encode a continuous value into a spike train using phase encoding.
@@ -131,6 +134,9 @@ class PhaseEncoderExpand(SpikeEncoder):
         self._phase_window = phase_window
 
         self._phase_values = torch.pow(2.0, -torch.arange(1, phase_window + 1))
+
+    def __repr__(self):
+        return f"PhaseEncoderExpand(phase_window={self._phase_window})"
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """

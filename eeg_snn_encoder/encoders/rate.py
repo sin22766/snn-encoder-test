@@ -32,6 +32,11 @@ class PoissonEncoder(SpikeEncoder):
         self._interval_freq = interval_freq
         self._random_seed = random_seed
 
+    def __repr__(self):
+        return (
+            f"PoissonEncoder(interval_freq={self._interval_freq}, random_seed={self._random_seed})"
+        )
+
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
         Encode a continuous value into a spike train using a Poisson process.
@@ -140,6 +145,9 @@ class PoissonEncoderExpand(SpikeEncoder):
         super().__init__()
         self._interval_freq = interval_freq
         self._random_seed = random_seed
+
+    def __repr__(self):
+        return f"PoissonEncoderExpand(interval_freq={self._interval_freq}, random_seed={self._random_seed})"
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """

@@ -36,6 +36,12 @@ class BSAEncoder(SpikeEncoder):
         # Low-pass filter initialization
         self._filter = signal.firwin(win_size, cutoff=cutoff)
 
+    def __repr__(self):
+        return (
+            f"BSAEncoder(win_size={self._win_size}, cutoff={self._cutoff}, "
+            f"threshold={self._threshold})"
+        )
+
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
         Encode a continuous value into a spike train using BSA.
