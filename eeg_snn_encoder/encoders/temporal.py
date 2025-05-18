@@ -39,6 +39,9 @@ class StepForwardEncoder(SpikeEncoder):
         super().__init__()
         self._threshold = threshold
 
+    def __repr__(self):
+        return f"StepForwardEncoder(threshold={self._threshold})"
+
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
         Encode a continuous value into a spike train using Step Forward method.
@@ -74,7 +77,9 @@ class StepForwardEncoder(SpikeEncoder):
 
         return spike_train
 
-    def decode(self, x: torch.Tensor, decode_params: Optional[SFDecodeParams] = None) -> torch.Tensor:
+    def decode(
+        self, x: torch.Tensor, decode_params: Optional[SFDecodeParams] = None
+    ) -> torch.Tensor:
         """
         Decode spike trains back to continuous values.
 
@@ -92,10 +97,10 @@ class StepForwardEncoder(SpikeEncoder):
         """
         if decode_params is None:
             raise ValueError("decode_params must be provided for decoding.")
-        
+
         if "base" not in decode_params:
             raise ValueError("decode_params must contain 'base'.")
-        
+
         base = decode_params["base"]
 
         weighted_spikes = x * self._threshold
@@ -163,6 +168,9 @@ class TBREncoder(SpikeEncoder):
         super().__init__()
         self._threshold = threshold
 
+    def __repr__(self):
+        return f"TBREncoder(threshold={self._threshold})"
+
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
         Encode a continuous value into a spike train by comparing with
@@ -192,7 +200,9 @@ class TBREncoder(SpikeEncoder):
 
         return spike_train
 
-    def decode(self, x: torch.Tensor, decode_params: Optional[TBRDecodeParams] = None) -> torch.Tensor:
+    def decode(
+        self, x: torch.Tensor, decode_params: Optional[TBRDecodeParams] = None
+    ) -> torch.Tensor:
         """
         Decode spike trains back to continuous values.
 
@@ -212,10 +222,10 @@ class TBREncoder(SpikeEncoder):
         """
         if decode_params is None:
             raise ValueError("decode_params must be provided for decoding.")
-        
+
         if "base" not in decode_params or "threshold" not in decode_params:
             raise ValueError("decode_params must contain 'base' and 'threshold'.")
-        
+
         threshold = decode_params["threshold"]
         base = decode_params["base"]
 

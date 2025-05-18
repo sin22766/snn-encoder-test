@@ -13,12 +13,12 @@ from eeg_snn_encoder.callback import TrackBestMetric
 from eeg_snn_encoder.encoders import (
     BSAEncoder,
     BurstEncoder,
+    DummyEncoder,
     PhaseEncoder,
     PoissonEncoder,
     SpikeEncoder,
     StepForwardEncoder,
     TBREncoder,
-    DummyEncoder
 )
 from eeg_snn_encoder.models.classifier import ModelConfig
 from eeg_snn_encoder.models.lightning import LitSeizureClassifier, OptimizerConfig
@@ -110,7 +110,7 @@ def burst_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     """
     max_window = trial.suggest_int("burst_max_window", 4, 8)
     n_max = trial.suggest_int("burst_n_max", 1, max_window)
-    t_max = trial.suggest_int("burst_t_max", 0, max_window // n_max)
+    t_max = trial.suggest_int("burst_t_max", 0, max_window)
     t_min = trial.suggest_int("burst_t_min", 0, t_max)
 
     encoder_params = {
@@ -229,6 +229,7 @@ def tbr_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     }
 
     return TBREncoder(**encoder_params)
+
 
 def dummy_encoder_tuning(trial: optuna.Trial) -> SpikeEncoder:
     """

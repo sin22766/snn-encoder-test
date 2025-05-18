@@ -10,6 +10,12 @@ class DummyEncoder(SpikeEncoder):
     This class is used for testing purpose and does not modify the input data.
     """
 
+    def __init__(self):
+        super().__init__()
+
+    def __repr__(self) -> str:
+        return "DummyEncoder()"
+
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
         Encode continuous values into spikes (no-op).

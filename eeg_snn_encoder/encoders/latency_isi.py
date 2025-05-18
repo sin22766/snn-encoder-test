@@ -45,6 +45,9 @@ class BurstEncoder(SpikeEncoder):
         self._t_max = t_max
         self._t_min = t_min
 
+    def __repr__(self):
+        return f"BurstEncoder(max_window={self._max_window}, n_max={self._n_max}, t_max={self._t_max}, t_min={self._t_min})"
+
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
         Encode a continuous input tensor into burst spike trains.
@@ -169,6 +172,9 @@ class BurstEncoderExpand(SpikeEncoder):
         self._n_max = n_max
         self._t_max = t_max
         self._t_min = t_min
+
+    def __repr__(self):
+        return f"BurstEncoderExpand(max_window={self._max_window}, n_max={self._n_max}, t_max={self._t_max}, t_min={self._t_min})"
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """
