@@ -1,0 +1,16 @@
+{
+    "model_params": {
+        "threshold": 0.042005679527546066,
+        "slope": 4.874079245445129,
+        "beta": 0.5674978363887917,
+        "dropout_rate1": 0.5034210147730156,
+        "dropout_rate2": 0.7535452141716618
+    },
+    "optimizer_params": {
+        "lr": 7.469068064183875e-05,
+        "weight_decay": 1.9342710855306664e-06,
+        "scheduler_factor": 0.18256563548193644,
+        "scheduler_patience": 5
+    },
+    "encoder_params": "TBREncoder(threshold=1.373600005738427)"
+}

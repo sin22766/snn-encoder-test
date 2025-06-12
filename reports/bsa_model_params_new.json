@@ -12,8 +12,5 @@
         "scheduler_factor": 0.3434576235217472,
         "scheduler_patience": 10
     },
-    "encoder_params": {
-        "interval_freq": 8,
-        "random_seed": 47
-    }
+    "encoder_params": "BSAEncoder(win_size=8, cutoff=0.9119280348604326, threshold=0.4593807635436444)"
 }

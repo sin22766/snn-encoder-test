@@ -1,0 +1,16 @@
+{
+    "model_params": {
+        "threshold": 0.05835285785794581,
+        "slope": 6.459242733756421,
+        "beta": 0.8307239691792176,
+        "dropout_rate1": 0.19793982388024786,
+        "dropout_rate2": 0.7343577284036589
+    },
+    "optimizer_params": {
+        "lr": 4.182674019527698e-05,
+        "weight_decay": 1.3555298836573258e-05,
+        "scheduler_factor": 0.4094699857423868,
+        "scheduler_patience": 5
+    },
+    "encoder_params": "PoissonEncoder(interval_freq=5, random_seed=47)"
+}

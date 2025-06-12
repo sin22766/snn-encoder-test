@@ -1,0 +1,16 @@
+{
+    "model_params": {
+        "threshold": 0.05344482304736103,
+        "slope": 8.644166988820501,
+        "beta": 0.7885752917289708,
+        "dropout_rate1": 0.16736348589724934,
+        "dropout_rate2": 0.1692179336065133
+    },
+    "optimizer_params": {
+        "lr": 8.7414418269108e-05,
+        "weight_decay": 6.120736055216126e-05,
+        "scheduler_factor": 0.6986389693143417,
+        "scheduler_patience": 3
+    },
+    "encoder_params": "StepForwardEncoder(threshold=0.21120508430205132)"
+}

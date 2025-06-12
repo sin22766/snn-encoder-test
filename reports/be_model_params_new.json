@@ -1,0 +1,16 @@
+{
+    "model_params": {
+        "threshold": 0.04665998904508566,
+        "slope": 16.425836068371417,
+        "beta": 0.6125272009676322,
+        "dropout_rate1": 0.8881359372342221,
+        "dropout_rate2": 0.6456865919989918
+    },
+    "optimizer_params": {
+        "lr": 3.866770865487511e-05,
+        "weight_decay": 1.7678134986255464e-06,
+        "scheduler_factor": 0.7841479869248199,
+        "scheduler_patience": 8
+    },
+    "encoder_params": "BurstEncoder(max_window=5, n_max=2, t_max=1, t_min=1)"
+}
