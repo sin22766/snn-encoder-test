@@ -8,10 +8,10 @@ from eeg_snn_encoder.config import PROJ_ROOT
 notebooks = PROJ_ROOT / "notebooks" / "5-model-cv-All.ipynb"
 
 params_list = [
-    # {"tuning_encoder": "pe"},
-    # {"tuning_encoder": "be"},
-    # {"tuning_encoder": "poisson"},
-    # {"tuning_encoder": "bsa"},
+    {"tuning_encoder": "pe"},
+    {"tuning_encoder": "be"},
+    {"tuning_encoder": "poisson"},
+    {"tuning_encoder": "bsa"},
     {"tuning_encoder": "sf"},
     {"tuning_encoder": "tbr"},
     {"tuning_encoder": "dummy"},
