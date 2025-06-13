@@ -1,6 +1,6 @@
 import gc
 import os
-from typing import Callable, List, TypedDict
+from typing import Callable, List, Optional, TypedDict
 
 import lightning.pytorch as pl
 from lightning.pytorch import LightningDataModule
@@ -38,7 +38,7 @@ class TrialFilter(TypedDict):
     """
 
     name: str
-    filter_fn: callable
+    filter_fn: Callable
 
 
 def filter_and_sort_trials(study_configs: List[TrialFilter], storage_url=None):
@@ -87,7 +87,7 @@ def filter_and_sort_trials(study_configs: List[TrialFilter], storage_url=None):
             False, states=(optuna.trial.TrialState.COMPLETE,)
         )
         qualifying_study_trials = list(filter(filter_fn, completed_trials))
-        ranked_trials = sorted(qualifying_study_trials, key=lambda t: t.value)
+        ranked_trials = sorted(qualifying_study_trials, key=lambda t: t.value or float("inf"))
 
         qualifying_trials.extend(ranked_trials)
         print(f"Found {len(ranked_trials)} qualifying trials in {study_name}")
@@ -267,8 +267,9 @@ def create_objective(
     datamodule: LightningDataModule,
     moniter_metric: str = "val_mse",
     moniter_mode: str = "min",
-    model_config: ModelConfig = None,
-    optimizer_config: OptimizerConfig = None,
+    model_config: Optional[ModelConfig] = None,
+    optimizer_config: Optional[OptimizerConfig] = None,
+    epochs: int = 30,
 ) -> Callable[[optuna.Trial], float]:
     """
     Create an objective function for Optuna based on the encoder type.
@@ -333,7 +334,7 @@ def create_objective(
         )
 
         trainer = pl.Trainer(
-            max_epochs=30,
+            max_epochs=epochs,
             accelerator="auto",
             devices="auto",
             strategy="auto",

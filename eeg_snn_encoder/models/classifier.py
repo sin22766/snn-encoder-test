@@ -30,7 +30,11 @@ class ModelConfig(TypedDict):
     dropout_rate2 : float
         Dropout rate applied after the output layer.
     """
-
+    threshold: float
+    slope: float
+    beta: float
+    dropout_rate1: float
+    dropout_rate2: float
 
 class EEGSTFTSpikeClassifier(nn.Module):
     """
@@ -78,7 +82,7 @@ class EEGSTFTSpikeClassifier(nn.Module):
 
         # Define surrogate gradient functions for backpropagation
         lstm_surrogate = surrogate.straight_through_estimator()
-        fc_surrogate = surrogate.fast_sigmoid(slope=config["slope"])
+        fc_surrogate = surrogate.fast_sigmoid(slope=config["slope"]) # type: ignore
 
         # Calculate dimensions after max pooling operations
         # After 3 max-pooling layers (each dividing by 2), size becomes: freq_dim → freq_dim/2 → freq_dim/4 → freq_dim/8
@@ -89,7 +93,7 @@ class EEGSTFTSpikeClassifier(nn.Module):
             in_channels=input_channels,
             out_channels=16,
             kernel_size=3,
-            max_pool=(2, 1),
+            max_pool=(2, 1), # type: ignore
             threshold=config["threshold"],
             spike_grad=lstm_surrogate,
         )
@@ -98,7 +102,7 @@ class EEGSTFTSpikeClassifier(nn.Module):
             in_channels=16,
             out_channels=32,
             kernel_size=3,
-            max_pool=(2, 1),
+            max_pool=(2, 1), # type: ignore
             threshold=config["threshold"],
             spike_grad=lstm_surrogate,
         )
@@ -107,7 +111,7 @@ class EEGSTFTSpikeClassifier(nn.Module):
             in_channels=32,
             out_channels=64,
             kernel_size=3,
-            max_pool=(2, 1),
+            max_pool=(2, 1), # type: ignore
             threshold=config["threshold"],
             spike_grad=lstm_surrogate,
         )
