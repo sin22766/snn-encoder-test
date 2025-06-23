@@ -3,6 +3,8 @@ from pathlib import Path
 import re
 from typing import List, Optional, TypedDict
 
+from mne.io import read_raw_edf
+
 
 class SeizureInfo(TypedDict):
     start_time: int
@@ -37,6 +39,13 @@ class SummaryParser:
     """
 
     def __init__(self, data_path: Path):
+        if not data_path.exists():
+            raise FileNotFoundError(f"Summary file not found: {data_path}")
+        if not data_path.is_file():
+            raise ValueError(f"Expected a file, but got a directory: {data_path}")
+        if not data_path.suffix == ".txt":
+            raise ValueError(f"Expected a .txt file, but got: {data_path.suffix}")
+
         self.data_path = data_path
         self.base_date = datetime(2075, 3, 10)
         self.channels_set = 0
@@ -162,3 +171,54 @@ class SummaryParser:
             self.base_date += timedelta(days=1)
 
         return time
+
+
+class DatasetInfoParser:
+    """Parser for the CHB-MIT EEG dataset directory.
+
+    This class parses multiple structured summary files and extracts patient EEG metadata,
+    including sampling rates, channel lists, file information, and seizure event annotations.
+
+    Parameters
+    ----------
+    dataset_path : Path
+        Path to the CHB-MIT dataset directory.
+    """
+
+    def __init__(self, dataset_path: Path):
+        if not dataset_path.exists() or not dataset_path.is_dir():
+            raise FileNotFoundError(f"Dataset path {dataset_path} does not exist.")
+        self.dataset_path = dataset_path
+    
+    def parse(self) -> List[PatientSummary]:
+        """Parse all summary files in the dataset directory.
+
+        Returns
+        -------
+        List[PatientSummary]
+            A list of dictionaries containing patient ID, sampling rate, channel lists, and file info
+            including seizure event annotations.
+        """
+        filelist = list(self.dataset_path.rglob("*summary.txt"))
+        filelist.sort()
+        summaries = []
+        for file_path in filelist:
+            parser = SummaryParser(file_path)
+            summary = parser.parse()
+            summaries.append(summary)
+
+        # Fill in missing start and end times for case 24
+        for summary in summaries:
+            for file in summary["files"]:
+                if file["start_time"] is None or file["end_time"] is None:
+                    # Read the EDF file to get the start and end times
+                    edf_path = self.dataset_path / summary["patient_id"] / file["filename"]
+                    raw = read_raw_edf(edf_path, preload=True, verbose=40)
+                    start_time = raw.info["meas_date"]
+                    end_time = start_time + timedelta(seconds=raw.n_times / raw.info["sfreq"])
+
+                    file["start_time"] = start_time
+                    file["end_time"] = end_time
+
+        return summaries
+    
